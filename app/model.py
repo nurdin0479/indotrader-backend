@@ -1,10 +1,13 @@
-def analyze_price_data(prices: list[float]) -> dict:
-    if not prices:
-        return {"signal": "neutral", "confidence": 0.0}
-    last = prices[-1]
-    avg = sum(prices[-5:]) / 5 if len(prices) >= 5 else sum(prices) / len(prices)
-    if last > avg:
-        return {"signal": "buy", "confidence": 0.7}
-    elif last < avg:
-        return {"signal": "sell", "confidence": 0.7}
-    return {"signal": "neutral", "confidence": 0.5}
+from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, Integer, String, Float, DateTime, func
+
+Base = declarative_base()
+
+class Signal(Base):
+    __tablename__ = "signals"
+
+    id = Column(Integer, primary_key=True, index=True)
+    symbol = Column(String, index=True)
+    signal = Column(String)
+    confidence = Column(Float)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
