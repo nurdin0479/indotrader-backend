@@ -1,20 +1,20 @@
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
-
-import sys
 import os
+import sys
 
-# Tambahkan path /app
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# Tambahkan path /app agar alembic bisa import model.py
+sys.path.append(os.getcwd())
 
-# Import Base dari model
-from model import Base
+from model import Base  # ini sudah benar
 
 config = context.config
 
-fileConfig(config.config_file_name)
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
 
+# Target metadata untuk autogenerate/upgrade
 target_metadata = Base.metadata
 
 
@@ -41,7 +41,7 @@ def run_migrations_online():
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
-            target_metadata=target_metadata
+            target_metadata=target_metadata,
         )
 
         with context.begin_transaction():
