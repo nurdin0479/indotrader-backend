@@ -4,8 +4,14 @@ from alembic import context
 import os
 import sys
 
+
+
+from model import Base  # terlihat sudah benar
+from db import engine    # pastikan engine dari db.py
+
+
 # Tambahkan path /app agar alembic bisa import model.py
-sys.path.append(os.getcwd())
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from model import Base  # ini sudah benar
 
