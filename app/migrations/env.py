@@ -4,30 +4,27 @@ from alembic import context
 import os
 import sys
 
-
-
-from model import Base  # terlihat sudah benar
-from db import engine    # pastikan engine dari db.py
-
-
-# Tambahkan path /app agar alembic bisa import model.py
+# Tambahkan path /app agar bisa import model.py
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from model import Base  # ini sudah benar
+from model import Base  # IMPORT MODEL ANDA
+
+# Ini harus sama dengan DATABASE_URL di db.py
+DATABASE_URL = "postgresql://postgres:postgres@db:5432/postgres"
 
 config = context.config
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
+# Interpret konfigurasi logging dari file alembic.ini
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Target metadata untuk autogenerate/upgrade
 target_metadata = Base.metadata
 
 
 def run_migrations_offline():
-    url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url,
+        url=DATABASE_URL,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -39,7 +36,7 @@ def run_migrations_offline():
 
 def run_migrations_online():
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section),
+        configuration=config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
