@@ -1,39 +1,35 @@
-from logging.config import fileConfig
-from sqlalchemy import engine_from_config, pool
-from alembic import context
+import sys
 import os
-from dotenv import load_dotenv
+from logging.config import fileConfig
 
-# Load .env
-load_dotenv()
+from sqlalchemy import create_engine
+from sqlalchemy import pool
 
-# Alembic Config object
+from alembic import context
+
+# --- FIX PYTHONPATH ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(os.path.dirname(BASE_DIR))
+sys.path.insert(0, ROOT_DIR)
+
+# --- IMPORT MODEL BASE ---
+from db import Base
+
+# --- DATABASE URL ---
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 config = context.config
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
-# Interpret the config file for Python logging
+# Logging
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Import Base from your app
-# Pastikan path ini benar sesuai struktur kamu
-#from app.db import Base
-from db import Base
-
-# Target metadata untuk autogenerate
 target_metadata = Base.metadata
-
-# Ambil DATABASE_URL dari environment
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-# ⛔ WAJIB indent setelah if
-if DATABASE_URL:
-    config.set_main_option("sqlalchemy.url", DATABASE_URL)
-else:
-    raise Exception("DATABASE_URL tidak ditemukan! Pastikan .env sudah dimuat.")
 
 
 def run_migrations_offline():
-    """Run migrations in 'offline' mode."""
+    """Run migrations without DB connection."""
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
@@ -41,27 +37,27 @@ def run_migrations_offline():
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
-
     with context.begin_transaction():
         context.run_migrations()
 
 
 def run_migrations_online():
-    """Run migrations in 'online' mode."""
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section),
-        prefix="sqlalchemy.",
+    """Run migrations with real DB connection."""
+    connectable = create_engine(
+        DATABASE_URL,
         poolclass=pool.NullPool,
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+        )
 
         with context.begin_transaction():
             context.run_migrations()
 
 
-# Jalankan mode online/offline
 if context.is_offline_mode():
     run_migrations_offline()
 else:
