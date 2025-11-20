@@ -16,7 +16,8 @@ if config.config_file_name is not None:
 
 # Import Base from your app
 # Pastikan path ini benar sesuai struktur kamu
-from app.db import Base
+#from app.db import Base
+from db import Base
 
 # Target metadata untuk autogenerate
 target_metadata = Base.metadata
