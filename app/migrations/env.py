@@ -1,76 +1,67 @@
-# app/migrations/env.py
+from logging.config import fileConfig
+from sqlalchemy import engine_from_config, pool
+from alembic import context
+import os
+from dotenv import load_dotenv
 
+# Load .env
+load_dotenv()
 
-# ensure /app is importable when alembic runs inside container
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-
-# import your Base and models so autogenerate can see them
-from app.db import Base
-import app.models # noqa: F401 (ensures models are imported)
-
-
-# Alembic config
+# Alembic Config object
 config = context.config
 
-
-# Set sqlalchemy.url from environment if available (preferred)
-DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL:
-config.set_main_option("sqlalchemy.url", DATABASE_URL)
-
-
-# Interpret the config file for Python logging.
+# Interpret the config file for Python logging
 if config.config_file_name is not None:
-fileConfig(config.config_file_name)
+    fileConfig(config.config_file_name)
 
+# Import Base from your app
+# Pastikan path ini benar sesuai struktur kamu
+from app.db import Base
 
-# target metadata for 'autogenerate' support
+# Target metadata untuk autogenerate
 target_metadata = Base.metadata
 
+# Ambil DATABASE_URL dari environment
+DATABASE_URL = os.getenv("DATABASE_URL")
 
+# ⛔ WAJIB indent setelah if
+if DATABASE_URL:
+    config.set_main_option("sqlalchemy.url", DATABASE_URL)
+else:
+    raise Exception("DATABASE_URL tidak ditemukan! Pastikan .env sudah dimuat.")
 
 
 def run_migrations_offline():
-url = config.get_main_option("sqlalchemy.url")
-context.configure(
-url=url,
-target_metadata=target_metadata,
-literal_binds=True,
-dialect_opts={"paramstyle": "named"},
-)
+    """Run migrations in 'offline' mode."""
+    url = config.get_main_option("sqlalchemy.url")
+    context.configure(
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
+    )
 
-
-with context.begin_transaction():
-context.run_migrations()
-
-
+    with context.begin_transaction():
+        context.run_migrations()
 
 
 def run_migrations_online():
-connectable = engine_from_config(
-config.get_section(config.config_ini_section),
-prefix="sqlalchemy.",
-poolclass=pool.NullPool,
-)
+    """Run migrations in 'online' mode."""
+    connectable = engine_from_config(
+        config.get_section(config.config_ini_section),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
+
+    with connectable.connect() as connection:
+        context.configure(connection=connection, target_metadata=target_metadata)
+
+        with context.begin_transaction():
+            context.run_migrations()
 
 
-with connectable.connect() as connection:
-context.configure(
-connection=connection,
-target_metadata=target_metadata,
-compare_type=True,
-compare_server_default=True,
-)
-
-
-with context.begin_transaction():
-context.run_migrations()
-
-
-
-
+# Jalankan mode online/offline
 if context.is_offline_mode():
-run_migrations_offline()
+    run_migrations_offline()
 else:
-run_migrations_online()
+    run_migrations_online()
