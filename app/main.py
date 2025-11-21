@@ -17,7 +17,7 @@ from services.market_data import (
 
 
 
-app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+#app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 
 
 # Init FastAPI
