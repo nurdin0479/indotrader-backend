@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
-
+from app.auth.auth import router as auth_router
 from db import get_db, Base, engine
 from crud.crud_signal import create_signal, get_signals
 from schemas import SignalCreate, SignalResponse
@@ -12,6 +12,13 @@ from services.market_data import (
     convert_binance_orderbook_to_idr,
     get_ohlcv_binance,
 )
+
+
+
+
+
+app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+
 
 # Init FastAPI
 app = FastAPI(title="Server NBFSOFT", version="1.0")
