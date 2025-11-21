@@ -14,7 +14,7 @@ from services.market_data import (
 )
 
 # Init FastAPI
-app = FastAPI(title="Indotrader Server NBFSOFT", version="1.0")
+app = FastAPI(title="Server NBFSOFT", version="1.0")
 
 # Create DB tables
 Base.metadata.create_all(bind=engine)
