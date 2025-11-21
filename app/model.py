@@ -1,7 +1,7 @@
 # app/models.py
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Float, Boolean
-from app.db import Base
+from db import Base
 
 
 class Admin(Base):
