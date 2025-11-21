@@ -43,5 +43,9 @@ services:
       timeout: 5s
       retries: 5
 
+  environment:
+  - PYTHONPATH=/app
+    
+
 volumes:
   pgdata:
