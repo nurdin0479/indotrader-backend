@@ -19,3 +19,16 @@ class SignalResponse(SignalBase):
 
     class Config:
         orm_mode = True
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class UserOut(BaseModel):
+    id: int
+    username: str
+    email: str
+    role: str
+
+    class Config:
+        orm_mode = True
