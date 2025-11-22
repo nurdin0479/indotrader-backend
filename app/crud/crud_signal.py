@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import Column, Integer, String, Float, DateTime
 from datetime import datetime
-from db import Base
-from schemas import SignalCreate
+from app.db import Base
+from app.schemas import SignalCreate
 
 class Signal(Base):
     __tablename__ = "signals"

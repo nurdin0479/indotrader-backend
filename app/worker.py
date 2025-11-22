@@ -4,10 +4,10 @@ import time
 import json
 import requests
 from datetime import datetime
-from services.market_data import get_ohlcv_binance, convert_binance_orderbook_to_idr, get_indodax_orderbook, get_indodax_ticker
-from detectors import detect_pump_dump, detect_stagnant, detect_sideway, detect_breakout, simple_support_resistance
-from db import SessionLocal, Base, engine
-from crud.crud_signal import Signal  # reuse model class
+from app.services.market_data import get_ohlcv_binance, convert_binance_orderbook_to_idr, get_indodax_orderbook, get_indodax_ticker
+from app.detectors import detect_pump_dump, detect_stagnant, detect_sideway, detect_breakout, simple_support_resistance
+from app.db import SessionLocal, Base, engine
+from app.crud.crud_signal import Signal  # reuse model class
 from sqlalchemy.orm import Session
 
 # ENV
