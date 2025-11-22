@@ -1,10 +1,41 @@
+# FastAPI Core
 fastapi
-uvicorn
+uvicorn[standard]
+
+# HTTP Requests
 requests
-psycopg2-binary
+httpx
+
+# Database
 sqlalchemy
-pydantic
-python-dotenv
+psycopg2-binary
 alembic
+
+# Environment
+python-dotenv
+
+# Security & Auth
 passlib[bcrypt]
 python-jose[cryptography]
+
+# Background Worker / Scheduler
+APScheduler
+celery[redis]
+
+# Data & Machine Learning
+numpy
+pandas
+scikit-learn
+
+# Technical Analysis (no TA-Lib compilation needed)
+ta
+pandas-ta
+
+# Async & Utils
+aiohttp
+pydantic
+pydantic[email]
+python-dateutil
+
+# Logging & Monitoring
+loguru
