@@ -37,7 +37,7 @@ numpy>=1.26.0
 scipy>=1.11.3
 ta>=0.11.0        # technical analysis helpers (ta-lib like)
 ta-lib>=0.4.24    # optional, requires libta-lib system lib
-pandas_ta>=0.4.0b0
+
 statsmodels>=0.14.0
 
 # Machine Learning / AI
