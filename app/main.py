@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 
 # Import internal modules
 from db import get_db, Base, engine
-from auth.auth import router as auth_router
-from crud.crud_signal import create_signal, get_signals
-from schemas import SignalCreate, SignalResponse
+from app.auth.auth import router as auth_router
+from app.crud.crud_signal import create_signal, get_signals
+from app.schemas import SignalCreate, SignalResponse
 from services.market_data import (
     get_indodax_ticker,
     get_indodax_orderbook,
