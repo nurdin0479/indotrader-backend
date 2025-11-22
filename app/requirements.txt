@@ -38,19 +38,9 @@ scipy>=1.11.3
 ta>=0.11.0        # technical analysis helpers (ta-lib like)
 ta-lib>=0.4.24    # optional, requires libta-lib system lib
 
-statsmodels>=0.14.0
 
-# Machine Learning / AI
-scikit-learn>=1.3.2
-lightgbm>=4.5.2
-xgboost>=2.1.4
-joblib>=1.3.2
 
-# Deep Learning / Transformers
-transformers>=4.35.0
-torch>=2.2.2        # NOTE: may require platform-specific wheel
-accelerate>=0.22.0
-onnxruntime>=1.15.0 # alternative runtime for inference
+
 
 # Utilities for model serving / inference
 fastapi-utils>=0.2.0
