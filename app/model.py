@@ -2,7 +2,9 @@
 
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Float, Boolean
-from db import Base
+#from db import Base
+from app.db import Base
+
 
 
 class Admin(Base):
