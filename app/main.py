@@ -1,11 +1,20 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-# Import internal modules
+# Import database
 from app.db import get_db, Base, engine
+
+# Auth Router
 from app.auth.auth import router as auth_router
+
+# CRUD Signal
 from app.crud.crud_signal import create_signal, get_signals
+
+# Schemas
 from app.schemas import SignalCreate, SignalResponse
+
+# Services (Market Data)
 from app.services.market_data import (
     get_indodax_ticker,
     get_indodax_orderbook,
@@ -13,15 +22,28 @@ from app.services.market_data import (
     get_ohlcv_binance,
 )
 
-# Init app terlebih dahulu
+# Inisialisasi App
 app = FastAPI(title="Server NBFSOFT", version="1.0")
 
-# Register router
-app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Create DB tables
 Base.metadata.create_all(bind=engine)
 
+# Register Router
+app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+
+
+# ───────────────────────────────────────────────
+# ROUTES UTAMA
+# ───────────────────────────────────────────────
 
 @app.get("/")
 def home():
@@ -31,7 +53,8 @@ def home():
 # ORDERBOOK
 @app.get("/orderbook/indodax/{symbol}")
 def orderbook_indodax(symbol: str, limit: int = 50):
-    return get_indodax_orderbook(f"{symbol.lower()}_idr", limit=limit)
+    pair = f"{symbol.lower()}_idr"
+    return get_indodax_orderbook(pair, limit=limit)
 
 
 @app.get("/orderbook/binance/{symbol}")
@@ -59,11 +82,11 @@ def get_signals_api(db: Session = Depends(get_db)):
 # MARKET
 @app.get("/market/{symbol}")
 def get_market_data(symbol: str):
-    indodax_data = get_indodax_ticker(f"{symbol.lower()}_idr")
-    binance_data = convert_binance_orderbook_to_idr(symbol.upper(), limit=10)
+    indodax = get_indodax_ticker(f"{symbol.lower()}_idr")
+    binance = convert_binance_orderbook_to_idr(symbol.upper(), limit=10)
 
     return {
         "symbol": symbol.upper(),
-        "indodax": indodax_data,
-        "binance": binance_data,
+        "indodax": indodax,
+        "binance": binance,
     }
