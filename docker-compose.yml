@@ -49,21 +49,20 @@ services:
     image: caddy:latest
     container_name: indotrader-caddy
     restart: always
-
-    # 🧩 Mount Caddyfile config
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
-
-    # 🌍 Expose port 80 & 443 ke publik untuk SSL
     ports:
       - "80:80"
       - "443:443"
-
-    # 🔄 pastikan Caddy satu network dengan backend
     depends_on:
       - web
+    
+ 
 
 volumes:
   pgdata:
