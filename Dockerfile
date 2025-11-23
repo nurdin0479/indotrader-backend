@@ -19,7 +19,7 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy entire application folder
-COPY app ./app
+COPY app /app/app
 
 # Make PYTHONPATH point to project root (/app)
 ENV PYTHONPATH=/app
