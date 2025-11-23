@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   web:
     build: .
@@ -12,6 +14,8 @@ services:
       db:
         condition: service_healthy
     restart: always
+    networks:
+      - backend
 
   worker:
     build: .
@@ -24,6 +28,8 @@ services:
       db:
         condition: service_healthy
     restart: always
+    networks:
+      - backend
 
   db:
     image: postgres:15
@@ -39,12 +45,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - backend
 
-
-
-####################################################################
-  # 🔐 CADDY (Reverse Proxy + Automatic SSL dari Let's Encrypt)
-  ####################################################################
   caddy:
     image: caddy:latest
     container_name: indotrader-caddy
@@ -60,11 +63,16 @@ services:
       - "80:80"
       - "443:443"
     depends_on:
-      - web
-    
- 
+      web:
+        condition: service_healthy
+    networks:
+      - backend
 
 volumes:
   pgdata:
   caddy_data:
   caddy_config:
+
+networks:
+  backend:
+    driver: bridge
