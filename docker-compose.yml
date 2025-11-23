@@ -40,5 +40,32 @@ services:
       timeout: 5s
       retries: 5
 
+
+
+####################################################################
+  # 🔐 CADDY (Reverse Proxy + Automatic SSL dari Let's Encrypt)
+  ####################################################################
+  caddy:
+    image: caddy:latest
+    container_name: indotrader-caddy
+    restart: always
+
+    # 🧩 Mount Caddyfile config
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
+    # 🌍 Expose port 80 & 443 ke publik untuk SSL
+    ports:
+      - "80:80"
+      - "443:443"
+
+    # 🔄 pastikan Caddy satu network dengan backend
+    depends_on:
+      - web
+
 volumes:
   pgdata:
+  caddy_data:
+  caddy_config:

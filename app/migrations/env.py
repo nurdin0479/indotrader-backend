@@ -5,7 +5,7 @@ from logging.config import fileConfig
 from sqlalchemy import create_engine
 from sqlalchemy import pool
 
-from alembic import context
+from app.alembic import context
 
 # --- FIX PYTHONPATH ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -13,7 +13,7 @@ ROOT_DIR = os.path.dirname(os.path.dirname(BASE_DIR))
 sys.path.insert(0, ROOT_DIR)
 
 # --- IMPORT MODEL BASE ---
-from db import Base
+from app.db import Base
 
 # --- DATABASE URL ---
 DATABASE_URL = os.getenv("DATABASE_URL")
