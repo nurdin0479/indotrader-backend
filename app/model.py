@@ -18,17 +18,6 @@ class Admin(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(255), unique=True, index=True, nullable=False)
-    password = Column(String(255), nullable=False)  # hashed password
-    full_name = Column(String(255), nullable=True)
-    telegram_token = Column(String(500), nullable=True)
-    telegram_enabled = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
 
 class Signal(Base):
     __tablename__ = "signals"
@@ -37,4 +26,17 @@ class Signal(Base):
     symbol = Column(String(64), index=True, nullable=False)
     signal_type = Column(String(64), nullable=False)
     confidence = Column(Float, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(64), unique=True, index=True, nullable=False)
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    password = Column(String(255), nullable=False)
+    role = Column(String(32), default="user")
+    full_name = Column(String(255), nullable=True)
+    telegram_token = Column(String(500), nullable=True)
+    telegram_enabled = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)

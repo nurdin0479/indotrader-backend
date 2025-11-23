@@ -1,16 +1,6 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import Column, Integer, String, Float, DateTime
-from datetime import datetime
-from app.db import Base
+from app.model import Signal
 from app.schemas import SignalCreate
-
-class Signal(Base):
-    __tablename__ = "signals"
-    id = Column(Integer, primary_key=True, index=True)
-    symbol = Column(String, index=True)
-    signal_type = Column(String)
-    confidence = Column(Float)
-    created_at = Column(DateTime, default=datetime.utcnow)
 
 def create_signal(db: Session, data: SignalCreate):
     signal = Signal(**data.dict())
