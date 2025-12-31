@@ -1,6 +1,32 @@
 version: '3.8'
 
 services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-indotrader}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-indotrader123}
+      POSTGRES_DB: ${POSTGRES_DB:-indotrader_db}
+    volumes:
+      - pg/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-indotrader}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - backend
+
+  redis:
+    image: redis:alpine
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - redis_/data
+
   web:
     build: .
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
@@ -13,15 +39,17 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
     restart: always
     networks:
       - backend
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
   worker:
     build: .
@@ -33,6 +61,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
     restart: always
     networks:
       - backend
@@ -46,23 +76,6 @@ services:
     restart: always
     networks:
       - backend    
-
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    networks:
-      - backend
 
   caddy:
     image: caddy:latest
@@ -85,9 +98,10 @@ services:
       - backend
 
 volumes:
-  pgdata:
+  pg
   caddy_data:
   caddy_config:
+  redis_data:
 
 networks:
   backend:
