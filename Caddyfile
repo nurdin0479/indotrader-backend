@@ -1,22 +1,68 @@
 {
-    debug
-    admin off
+    servers {
+        protocol {
+            experimental_http3
+        }
+    }
 }
 
-:80, :443 {
-    # 🎯 Serve frontend untuk semua route (kecuali /api/*)
-    handle /* {
-        reverse_proxy frontend:80
+indotrader.my.id {
+    # Handle API requests - proxy to FastAPI backend
+    reverse_proxy /api/* /health /webhook/* /ws/* web:8000 {
+        to web:8000
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-Host {host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Real-IP {remote_host}
+        header_up Connection {>Connection}
+        header_up Upgrade {>Upgrade}
     }
-
-    # ⚡ API backend
-    handle /api/* {
-        reverse_proxy web:8000
+    
+    # Serve frontend through nginx container
+    reverse_proxy frontend:80 {
+        to frontend:80
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-Host {host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Real-IP {remote_host}
     }
-
-    # 🔄 WebSocket (jika ada)
-    handle /ws/* {
-        reverse_proxy web:8000
+    
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
     }
+    
+    # Compression
+    encode gzip
+}
 
+# Redirect www to non-www
+www.indotrader.my.id {
+    redir https://indotrader.my.id{uri}
+}
+
+# Optional: API subdomain for trading services
+api.indotrader.my.id {
+    reverse_proxy web:8000 {
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-Host {host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Real-IP {remote_host}
+    }
+}
+
+# Optional: WebSocket for real-time updates
+ws.indotrader.my.id {
+    reverse_proxy web:8000 {
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-Host {host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Real-IP {remote_host}
+        header_up Connection {>Connection}
+        header_up Upgrade {>Upgrade}
+    }
 }
