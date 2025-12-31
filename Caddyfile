@@ -8,14 +8,12 @@
 
 indotrader.my.id {
     # Handle API requests - proxy to FastAPI backend
-    reverse_proxy /api/* /health /webhook/* /ws/* web:8000 {
+    reverse_proxy /api/* /health /webhook/* web:8000 {
         to web:8000
         header_up X-Forwarded-Proto {scheme}
         header_up X-Forwarded-Host {host}
         header_up X-Forwarded-For {remote_host}
         header_up X-Real-IP {remote_host}
-        header_up Connection {>Connection}
-        header_up Upgrade {>Upgrade}
     }
     
     # Serve frontend through nginx container
@@ -43,26 +41,4 @@ indotrader.my.id {
 # Redirect www to non-www
 www.indotrader.my.id {
     redir https://indotrader.my.id{uri}
-}
-
-# Optional: API subdomain for trading services
-api.indotrader.my.id {
-    reverse_proxy web:8000 {
-        header_up X-Forwarded-Proto {scheme}
-        header_up X-Forwarded-Host {host}
-        header_up X-Forwarded-For {remote_host}
-        header_up X-Real-IP {remote_host}
-    }
-}
-
-# Optional: WebSocket for real-time updates
-ws.indotrader.my.id {
-    reverse_proxy web:8000 {
-        header_up X-Forwarded-Proto {scheme}
-        header_up X-Forwarded-Host {host}
-        header_up X-Forwarded-For {remote_host}
-        header_up X-Real-IP {remote_host}
-        header_up Connection {>Connection}
-        header_up Upgrade {>Upgrade}
-    }
 }
