@@ -1,3 +1,27 @@
-indotrader.my.id {
-    reverse_proxy web:8000
+{
+    debug
+    admin off
+}
+
+:80, :443 {
+    # 🔹 Serve frontend untuk semua route
+    handle /* {
+        reverse_proxy frontend:80
+    }
+
+    # 🔹 API backend
+    handle /api/* {
+        reverse_proxy web:8000
+    }
+
+    # 🔹 WebSocket (jika ada)
+    handle /ws/* {
+        reverse_proxy web:8000
+    }
+
+    # 🔹 Static files (opsional)
+    handle /static/* {
+        root * /usr/share/nginx/html
+        file_server
+    }
 }
