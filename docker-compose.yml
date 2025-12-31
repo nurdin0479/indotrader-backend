@@ -1,25 +1,27 @@
+version: '3.8'
+
 services:
   web:
-  build: .
-  command: uvicorn app.main:app --host 0.0.0.0 --port 8000
-  ports:
-    - "8000:8000"
-  env_file:
-     - .env
-  environment:
-    PYTHONPATH: /app
-  depends_on:
-    db:
-      condition: service_healthy
-  restart: always
-  networks:
-    - backend
-  healthcheck:
-    test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-    interval: 10s
-    timeout: 5s
-    retries: 10
-    start_period: 30s
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /app
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   worker:
     build: .
@@ -35,7 +37,7 @@ services:
     networks:
       - backend
 
-    # 🔹 Frontend (React SPA)
+  # 🔹 Frontend (React SPA)
   frontend:
     image: nginx:alpine
     volumes:
@@ -77,8 +79,8 @@ services:
       - "80:80"
       - "443:443"
     depends_on:
-      web:
-        condition: service_healthy
+      - web
+      - frontend
     networks:
       - backend
 
